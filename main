@@ -1,0 +1,168 @@
+import pygame
+import random
+
+clock = pygame.time.Clock()
+pygame.init()
+screen = pygame.display.set_mode((1200, 800))
+pygame.display.set_caption('BossFight Lore')
+#icon = pygame.image.load('icon.jpg')
+#pygame.display.set_icon(icon)
+
+background = pygame.image.load('background.jpg')
+background = pygame.transform.scale(background, (1200, 800))
+
+bg_sound = pygame.mixer.Sound('bg_music.wav')
+bg_sound.play(-1)
+bg_sound.set_volume(0.5)
+
+player_main = [
+    pygame.image.load('enemymain.png'),
+]
+player_left = [
+    pygame.image.load('enemyleft1.png'),
+    pygame.image.load('enemyleft2.png'),
+    pygame.image.load('enemyleft3.png'),
+    pygame.image.load('enemyleft4.png'),
+    pygame.image.load('enemyleft5.png'),
+    pygame.image.load('enemyleft6.png'),
+    pygame.image.load('enemyleft7.png'),
+    pygame.image.load('enemyleft8.png'),
+    pygame.image.load('enemyleft9.png'),
+]
+player_right = [
+    pygame.image.load('enemyright1.png'),
+    pygame.image.load('enemyright2.png'),
+    pygame.image.load('enemyright3.png'),
+    pygame.image.load('enemyright4.png'),
+    pygame.image.load('enemyright5.png'),
+    pygame.image.load('enemyright6.png'),
+    pygame.image.load('enemyright7.png'),
+    pygame.image.load('enemyright8.png'),
+    pygame.image.load('enemyright9.png'),
+]
+enemies = [
+
+]
+
+
+class Player():
+    def __init__(self, x, y, speed, images_stable, images_left, images_right):
+        self.player_aim_count = 0
+        self.speed = speed
+        self.images_stable = images_stable
+        self.images_left = images_left
+        self.images_right = images_right
+        self.image = images_stable[0]
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.direction = "forward"
+    def draw(self):
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+    def move(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            self.direction = "left"
+            self.rect.x -= self.speed
+            if self.player_aim_count == 8:
+                self.player_aim_count = 0
+            else:
+                self.player_aim_count += 1
+        elif keys[pygame.K_d]:
+            self.direction = "right"
+            self.rect.x += self.speed
+            if self.player_aim_count == 8:
+                self.player_aim_count = 0
+            else:
+                self.player_aim_count += 1
+        else:
+            self.direction = "forward"
+    def animation(self):
+        if self.direction == "forward":
+            self.image = self.images_stable[0]
+        elif self.direction == "left":
+            self.image = self.images_left[self.player_aim_count]
+        else:
+            self.image = self.images_right[self.player_aim_count]
+            
+class Enemy():
+    def __init__(self, speed, images_left, images_right):
+        self.player_aim_count = 0
+        self.speed = speed
+        self.images_left = images_left
+        self.images_right = images_right
+        self.image = images_left[self.player_aim_count]
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(100, 1100)
+        self.rect.y = -50
+        self.direction = "left"
+        enemies.append(self)
+    def draw(self):
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+    def move(self):
+        if self.rect.y < 610:
+            self.rect.y += self.speed
+        elif self.rect.y > 610:
+            self.rect.y == 610
+        else:
+            if player.rect.x <= self.rect.x:
+                self.direction == "left"
+                self.rect.x -= self.speed
+            else:
+                self.direction == "right"
+                self.rect.x += self.speed
+    def animation(self):
+        if self.direction == "left":
+            self.image = self.images_left[self.player_aim_count]
+        else:
+            self.image = self.images_right[self.player_aim_count]
+
+class Bullet():
+    def __init__(self, speed, x, y):
+        self.speed = speed
+        self.x = self.player.x
+        self.y = self.player.y
+    def move(self):
+        if self.direction == "right":
+            self.x += self.speed
+        else:
+            self.direction == "left":
+            self.x -= self.speed
+
+
+
+player = Player(600, 610, 20, player_main, player_left, player_right)
+enemy = Enemy(20, player_left, player_right)
+enemy2 = Enemy(20, player_left, player_right)
+enemy3 = Enemy(20, player_left, player_right)
+enemy4 = Enemy(20, player_left, player_right)
+enemy5 = Enemy(20, player_left, player_right)
+bullet = Bullet(20, self.x, self.y)
+
+game = True
+while game:
+
+    FPS = 20
+    clock.tick(FPS)
+
+    screen.blit(background, (0,0))
+    player.draw()
+    player.move()
+    player.animation()
+
+    for enemy in enemies:
+        enemy.draw()
+        enemy.move()
+        enemy.animation()
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_SPACE]:
+        bullet.draw()
+        bullet.move()
+
+    pygame.display.update()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            game = False
+            pygame.quit()
